@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Podcast Script – Parte 5</title>
-<link rel="icon" href="https://raw.githubusercontent.com/Zacker171819/podcast/refs/heads/main/WhatsApp-Image-2026-03-26-at-17.58.08.ico">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@300;400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -136,8 +135,9 @@
     font-size: 20px;
     flex-shrink: 0;
   }
-  .avatar.a { background: #fde8e0; border: 2px solid var(--speaker-a-border); }
-  .avatar.b { background: #ddeaf7; border: 2px solid var(--speaker-b-border); }
+  .avatar.a { background: #fde8e0; border: 2px solid var(--speaker-a-border); overflow: hidden; padding: 0; }
+  .avatar.b { background: #ddeaf7; border: 2px solid var(--speaker-b-border); overflow: hidden; padding: 0; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .speaker-info strong { display: block; font-weight: 700; font-size: 14px; }
   .speaker-info span { font-size: 12px; color: #888; }
 
@@ -315,14 +315,14 @@
   <!-- SPEAKERS -->
   <div class="speakers">
     <div class="speaker-card">
-      <div class="avatar a">👩</div>
+      <div class="avatar a"><img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/biaavatar.jpg" alt="Bianchi"></div>
       <div class="speaker-info">
         <strong>BIANCHI</strong>
         <span>Conduttrice, tono caldo e guida</span>
       </div>
     </div>
     <div class="speaker-card">
-      <div class="avatar b">👨</div>
+      <div class="avatar b"><img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/borasoavatar.jpg" alt="Boraso"></div>
       <div class="speaker-info">
         <strong>BORASO</strong>
         <span>Co-host, domande dal punto di vista dello studente</span>
