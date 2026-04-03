@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Podcast Script – Parte 5</title>
+<title>Podcast Script – Orientamento Scolastico</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@300;400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -63,10 +63,7 @@
     line-height: 1.2;
     max-width: 680px;
   }
-  header h1 em {
-    font-style: italic;
-    color: #f0c090;
-  }
+  header h1 em { font-style: italic; color: #f0c090; }
   .meta-row {
     margin-top: 20px;
     display: flex;
@@ -96,9 +93,18 @@
     border-right: 1px solid #333;
     margin-right: 16px;
     white-space: nowrap;
+    cursor: default;
   }
   .series-nav .ep:last-child { border-right: none; margin-right: 0; }
   .series-nav .ep.current { color: #f0c090; font-weight: 400; }
+  .series-nav .ep.clickable {
+    cursor: pointer;
+    transition: color .2s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #555;
+  }
+  .series-nav .ep.clickable:hover { color: #f0c090; }
 
   /* ── MAIN LAYOUT ── */
   .page {
@@ -107,7 +113,11 @@
     padding: 0 32px;
   }
 
-  /* ── SPEAKERS LEGEND ── */
+  .ep-panel { display: none; }
+  .ep-panel.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── SPEAKERS ── */
   .speakers {
     display: flex;
     gap: 24px;
@@ -132,19 +142,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
     flex-shrink: 0;
+    overflow: hidden;
   }
-  .avatar.a { background: #fde8e0; border: 2px solid var(--speaker-a-border); overflow: hidden; padding: 0; }
-  .avatar.b { background: #ddeaf7; border: 2px solid var(--speaker-b-border); overflow: hidden; padding: 0; }
+  .avatar.a { background: #fde8e0; border: 2px solid var(--speaker-a-border); padding: 0; }
+  .avatar.b { background: #ddeaf7; border: 2px solid var(--speaker-b-border); padding: 0; }
   .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .speaker-info strong { display: block; font-weight: 700; font-size: 14px; }
   .speaker-info span { font-size: 12px; color: #888; }
 
-  /* ── RULE DIVIDER ── */
   hr.section { border: none; border-top: 2px solid var(--rule); margin: 32px 0 28px; }
 
-  /* ── SECTION TITLES ── */
   .section-title {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -162,7 +171,6 @@
     border-bottom: 1px solid var(--rule);
   }
 
-  /* ── DIRECTION NOTES ── */
   .direction {
     background: var(--note-bg);
     border-left: 3px solid var(--note-border);
@@ -175,7 +183,6 @@
     font-family: 'DM Mono', monospace;
   }
 
-  /* ── DIALOGUE BUBBLES ── */
   .line {
     display: grid;
     grid-template-columns: 90px 1fr;
@@ -194,28 +201,22 @@
   }
   .speaker-tag.a { color: var(--speaker-a-border); }
   .speaker-tag.b { color: var(--speaker-b-border); }
+  .speaker-tag.c { color: #2a7a4b; }
+  .speaker-tag.d { color: #7a2a6a; }
 
   .bubble {
     padding: 14px 18px;
     border-radius: 12px;
     font-size: 15px;
     line-height: 1.7;
-    position: relative;
   }
-  .bubble.a {
-    background: var(--speaker-a-bg);
-    border: 1px solid #f0cdc0;
-    border-left: 3px solid var(--speaker-a-border);
-  }
-  .bubble.b {
-    background: var(--speaker-b-bg);
-    border: 1px solid #c5d9ee;
-    border-left: 3px solid var(--speaker-b-border);
-  }
+  .bubble.a { background: var(--speaker-a-bg); border: 1px solid #f0cdc0; border-left: 3px solid var(--speaker-a-border); }
+  .bubble.b { background: var(--speaker-b-bg); border: 1px solid #c5d9ee; border-left: 3px solid var(--speaker-b-border); }
+  .bubble.c { background: #edf7f1; border: 1px solid #b5dfc5; border-left: 3px solid #2a7a4b; }
+  .bubble.d { background: #f7edf5; border: 1px solid #dfb5d5; border-left: 3px solid #7a2a6a; }
   .bubble strong { font-weight: 700; }
   .bubble em { font-style: italic; color: #555; }
 
-  /* ── HIGHLIGHT BOXES ── */
   .highlight-box {
     background: white;
     border: 1.5px solid var(--rule);
@@ -224,32 +225,12 @@
     padding: 20px 24px;
     margin: 24px 0;
   }
-  .highlight-box h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    margin-bottom: 12px;
-    color: var(--accent);
-  }
-  .highlight-box ul {
-    list-style: none;
-    padding: 0;
-  }
-  .highlight-box ul li {
-    padding: 5px 0 5px 22px;
-    position: relative;
-    font-size: 14px;
-    border-bottom: 1px dotted #e0d5c0;
-  }
+  .highlight-box h3 { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 12px; color: var(--accent); }
+  .highlight-box ul { list-style: none; padding: 0; }
+  .highlight-box ul li { padding: 5px 0 5px 22px; position: relative; font-size: 14px; border-bottom: 1px dotted #e0d5c0; }
   .highlight-box ul li:last-child { border-bottom: none; }
-  .highlight-box ul li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-    font-weight: 700;
-  }
+  .highlight-box ul li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
 
-  /* ── TIMESTAMP BADGE ── */
   .timestamp {
     display: inline-block;
     font-family: 'DM Mono', monospace;
@@ -262,7 +243,6 @@
     letter-spacing: .1em;
   }
 
-  /* ── FOOTER ── */
   footer {
     margin-top: 64px;
     padding: 28px 64px;
@@ -288,11 +268,10 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="series-label">Script Podcast · Luca Bianchi, Federico, Luca Boraso, Cesare</div>
-  <h1>Come capisco se è<br><em>la scuola giusta</em> per me?</h1>
-  <div class="meta-row">
+  <div class="series-label">Script Podcast · Orientamento Scolastico</div>
+  <h1 id="main-title">Come capisco se è<br><em>la scuola giusta</em> per me?</h1>
+  <div class="meta-row" id="meta-row">
     <span>Episodio 5 di 6</span>
     <span>Target: studenti medie + famiglie</span>
     <span>Durata stimata: 12–15 min</span>
@@ -300,124 +279,61 @@
   </div>
 </header>
 
-<!-- SERIES NAV -->
 <nav class="series-nav">
   <div class="ep">Ep.1 – La scuola giusta per mio figlio</div>
   <div class="ep">Ep.2 – I genitori devono influire?</div>
   <div class="ep">Ep.3 – Il lavoro dei sogni</div>
   <div class="ep">Ep.4 – Sfruttare gli open day</div>
-  <div class="ep current">Ep.5 – Come capisco se è giusta PER ME ★</div>
-  <div class="ep">Ep.6 – Le amicizie influenzano?</div>
+  <div class="ep current" data-ep="5">Ep.5 – Come capisco se è giusta PER ME ★</div>
+  <div class="ep clickable" data-ep="6">Ep.6 – Le amicizie influenzano?</div>
 </nav>
 
+
+<!-- ══════════════════ EPISODE 5 ══════════════════ -->
+<div class="ep-panel active" id="panel-5">
 <div class="page">
 
-  <!-- SPEAKERS -->
   <div class="speakers">
     <div class="speaker-card">
       <div class="avatar a"><img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/biaavatar.jpg" alt="Bianchi"></div>
-      <div class="speaker-info">
-        <strong>BIANCHI</strong>
-        <span>Conduttrice, tono caldo e guida</span>
-      </div>
+      <div class="speaker-info"><strong>BIANCHI</strong><span>Conduttrice, tono caldo e guida</span></div>
     </div>
     <div class="speaker-card">
       <div class="avatar b"><img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/borasoavatar.jpg" alt="Boraso"></div>
-      <div class="speaker-info">
-        <strong>BORASO</strong>
-        <span>Co-host, domande dal punto di vista dello studente</span>
-      </div>
+      <div class="speaker-info"><strong>BORASO</strong><span>Co-host, domande dal punto di vista dello studente</span></div>
     </div>
   </div>
 
   <hr class="section">
 
-  <!-- ═══════════════════════════════ BLOCCO 1 ═══ -->
   <div class="section-title">Blocco 1</div>
   <h2 class="block-title">🎬 Apertura — Intro episodio</h2>
   <span class="timestamp">00:00 – 01:30</span>
-
   <div class="direction">[ Sigla podcast in sottofondo, si abbassa lentamente ]</div>
 
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Ciao a tutti e bentornati al nostro podcast sull'orientamento scolastico! Sono Bianchi…</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">…e io sono Boraso. E oggi arriviamo finalmente all'episodio che, vi confesso, aspettavo di più.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Già! Perché oggi parliamo <strong>direttamente a voi studenti</strong>. Sì, proprio a voi che siete in terza media e state per scegliere la scuola superiore.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Magari state ascoltando questo podcast con i vostri genitori, o magari da soli — in ogni caso, questo episodio è per voi. La domanda è semplice ma potente: <em>come faccio a capire se la scuola che sto scegliendo è davvero quella giusta per me?</em></div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">E non vi daremo una risposta preconfezionata, perché non esiste. Vi daremo però degli <strong>strumenti concreti</strong> per ascoltarvi, per capirvi, e per prendere una decisione che sia vostra. Pronti?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Si parte!</div>
-  </div>
-
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Ciao a tutti e bentornati al nostro podcast sull'orientamento scolastico! Sono Bianchi…</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">…e io sono Boraso. E oggi arriviamo finalmente all'episodio che, vi confesso, aspettavo di più.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Già! Perché oggi parliamo <strong>direttamente a voi studenti</strong>. Sì, proprio a voi che siete in terza media e state per scegliere la scuola superiore.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Magari state ascoltando questo podcast con i vostri genitori, o magari da soli — in ogni caso, questo episodio è per voi. La domanda è semplice ma potente: <em>come faccio a capire se la scuola che sto scegliendo è davvero quella giusta per me?</em></div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">E non vi daremo una risposta preconfezionata, perché non esiste. Vi daremo però degli <strong>strumenti concreti</strong> per ascoltarvi, per capirvi, e per prendere una decisione che sia vostra. Pronti?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Si parte!</div></div>
   <div class="direction">[ breve jingle di separazione ]</div>
+
   <hr class="section">
 
-  <!-- ═══════════════════════════════ BLOCCO 2 ═══ -->
   <div class="section-title">Blocco 2</div>
   <h2 class="block-title">🧠 La trappola della scelta "sicura"</h2>
   <span class="timestamp">01:30 – 04:00</span>
 
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Cominciamo con una cosa che succede spessissimo. Molti ragazzi scelgono la scuola superiore per motivi che sembrano solidi, ma in realtà non lo sono. Marco, faccio un esempio?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Vai, vai.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a"><em>"Il liceo scientifico è la scelta più sicura perché ti apre tutte le porte."</em> Quante volte avete sentito questa frase?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Tantissime. E capiamoci: non è sbagliata in assoluto. Ma il punto è: <strong>apre le porte a chi?</strong> Perché se ogni mattina ti svegli e vai a scuola sentendoti nel posto sbagliato, quelle porte le fai fatica pure ad avvicinarti.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Esatto. La "scelta sicura" ha senso solo se è anche <strong>la scelta tua</strong>. Altrimenti diventa una trappola. Cinque anni sono tanti. Cinque anni passati a fare qualcosa che non senti tuo pesano — sulle note, sulla motivazione, e anche sul benessere.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Però capisco anche che a tredici anni non è facile sapere esattamente cosa si vuole. Io a tredici anni volevo fare il calciatore professionista <em>e</em> il cuoco. In contemporanea.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a"><em>[ride]</em> Ecco, e questo è normalissimo! Non vi chiediamo di sapere già chi volete essere. Vi chiediamo qualcosa di molto più piccolo e fattibile: <strong>capire chi siete adesso.</strong></div>
-  </div>
-
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Cominciamo con una cosa che succede spessissimo. Molti ragazzi scelgono la scuola superiore per motivi che sembrano solidi, ma in realtà non lo sono. Faccio un esempio?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Vai, vai.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a"><em>"Il liceo scientifico è la scelta più sicura perché ti apre tutte le porte."</em> Quante volte avete sentito questa frase?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Tantissime. E capiamoci: non è sbagliata in assoluto. Ma il punto è: <strong>apre le porte a chi?</strong> Perché se ogni mattina ti svegli e vai a scuola sentendoti nel posto sbagliato, quelle porte le fai fatica pure ad avvicinarti.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Esatto. La "scelta sicura" ha senso solo se è anche <strong>la scelta tua</strong>. Altrimenti diventa una trappola. Cinque anni sono tanti. Cinque anni passati a fare qualcosa che non senti tuo pesano — sulle note, sulla motivazione, e anche sul benessere.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Però capisco anche che a tredici anni non è facile sapere esattamente cosa si vuole. Io a tredici anni volevo fare il calciatore professionista <em>e</em> il cuoco. In contemporanea.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a"><em>[ride]</em> Ecco, e questo è normalissimo! Non vi chiediamo di sapere già chi volete essere. Vi chiediamo qualcosa di molto più piccolo e fattibile: <strong>capire chi siete adesso.</strong></div></div>
   <div class="direction">[ pausa breve, tono più riflessivo ]</div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">E questo è il punto di partenza. Non il futuro, ma il presente. Cosa ti piace fare? Cosa ti viene naturale? Cosa ti annoia profondamente?</div>
-  </div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">E questo è il punto di partenza. Non il futuro, ma il presente. Cosa ti piace fare? Cosa ti viene naturale? Cosa ti annoia profondamente?</div></div>
 
   <div class="highlight-box">
     <h3>💡 Domanda da portarsi a casa – Blocco 2</h3>
@@ -430,85 +346,25 @@
 
   <hr class="section">
 
-  <!-- ═══════════════════════════════ BLOCCO 3 ═══ -->
   <div class="section-title">Blocco 3</div>
   <h2 class="block-title">🔍 I 4 segnali che ti dicono "sì, è quella giusta"</h2>
   <span class="timestamp">04:00 – 07:30</span>
 
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Ok. Arriviamo al cuore dell'episodio. Come si riconosce la scuola giusta? Io dico che ci sono <strong>quattro segnali</strong> precisi. Marco, vuoi fare da cavia?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Sempre. Anzi, provo a rispondere dal punto di vista di uno studente di terza media, così chi ci ascolta può seguire insieme.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a"><strong>Primo segnale: il tuo corpo non mente.</strong> Quando pensi a quella scuola — anche solo immaginarti lì dentro, tra quei corridoi, in quella classe — come ti senti fisicamente? C'è una sensazione di curiosità, di eccitazione, magari un po' di ansia ma quella bella? Oppure c'è una specie di peso, una chiusura?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Mmm. Ci devo pensare. Tipo: quando mi immagino in un istituto tecnico con il laboratorio di elettronica mi viene una specie di… brivido curioso. Mentre quando mi immagino in un classico con quattro ore di latino alla settimana sento già lo sbadiglio.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Perfetto. Quello è il primo segnale. Ascoltalo. <em>[pausa]</em> <strong>Secondo segnale: le materie ti parlano.</strong> Non devi amarle tutte — questo non esiste in nessuna scuola. Ma almeno il 60% di quello che studieresti deve farti pensare <em>"ok, questo mi interessa davvero"</em>.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">E come faccio a saperlo? Spesso di quelle materie so pochissimo.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Ottima domanda — e qui gli open day sono fondamentali, ne abbiamo parlato nell'episodio quattro. Ma anche prima: puoi cercare su YouTube una lezione di quella materia. Guarda come reagisci. Se dopo cinque minuti sei incuriosito, buon segno. Se dopo due minuti stai già guardando il soffitto…</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b"><em>[ride]</em> Anche quello è un segnale.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Esattamente. <strong>Terzo segnale: il "tipo" di intelligenza che quella scuola valorizza somiglia alla tua.</strong> Ci sono scuole che premiano chi ragiona in modo astratto e teorico. Altre che valorizzano chi è pratico, manuale, creativo. Altre ancora che mettono al centro la comunicazione, le lingue, le relazioni. Nessuno di questi modi di essere è meglio degli altri — ma uno di questi <em>sei tu</em>.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Questo mi colpisce molto. Quindi non si tratta solo di materie, ma proprio di… come funziona la tua testa?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Sì. E spesso i ragazzi si sentono "stupidi" in una certa scuola non perché siano stupidi, ma perché quella scuola valorizza un tipo di intelligenza diverso dal loro. Spostati in un ambiente diverso, e fioriscono.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">E il quarto segnale?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a"><strong>Quarto segnale: non stai scegliendo per esclusione o per paura.</strong> Se la tua scelta suona così: <em>"beh, il classico no di sicuro, lo scientifico dicono che è impegnativo, il tecnico non lo conosce nessuno… quindi faccio lo scientifico"</em> — stai scegliendo per eliminazione. Non per attrazione. E quella è la scelta più rischiosa di tutte.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Perché vai senza una vera motivazione che ti spinge.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Esatto. La motivazione non risolve tutto, ma senza di essa tutto diventa molto più difficile.</div>
-  </div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Ok. Arriviamo al cuore dell'episodio. Come si riconosce la scuola giusta? Io dico che ci sono <strong>quattro segnali</strong> precisi. Boraso, vuoi fare da cavia?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Sempre. Anzi, provo a rispondere dal punto di vista di uno studente di terza media, così chi ci ascolta può seguire insieme.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a"><strong>Primo segnale: il tuo corpo non mente.</strong> Quando pensi a quella scuola — anche solo immaginarti lì dentro, tra quei corridoi, in quella classe — come ti senti fisicamente? C'è una sensazione di curiosità, di eccitazione, magari un po' di ansia ma quella bella? Oppure c'è una specie di peso, una chiusura?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Mmm. Ci devo pensare. Tipo: quando mi immagino in un istituto tecnico con il laboratorio di elettronica mi viene una specie di… brivido curioso. Mentre quando mi immagino in un classico con quattro ore di latino alla settimana sento già lo sbadiglio.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Perfetto. Quello è il primo segnale. Ascoltalo. <em>[pausa]</em> <strong>Secondo segnale: le materie ti parlano.</strong> Non devi amarle tutte — questo non esiste in nessuna scuola. Ma almeno il 60% di quello che studieresti deve farti pensare <em>"ok, questo mi interessa davvero"</em>.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">E come faccio a saperlo? Spesso di quelle materie so pochissimo.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Ottima domanda — e qui gli open day sono fondamentali, ne abbiamo parlato nell'episodio quattro. Ma anche prima: puoi cercare su YouTube una lezione di quella materia. Guarda come reagisci. Se dopo cinque minuti sei incuriosito, buon segno. Se dopo due minuti stai già guardando il soffitto…</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b"><em>[ride]</em> Anche quello è un segnale.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Esattamente. <strong>Terzo segnale: il "tipo" di intelligenza che quella scuola valorizza somiglia alla tua.</strong> Ci sono scuole che premiano chi ragiona in modo astratto e teorico. Altre che valorizzano chi è pratico, manuale, creativo. Altre ancora che mettono al centro la comunicazione, le lingue, le relazioni. Nessuno di questi modi di essere è meglio degli altri — ma uno di questi <em>sei tu</em>.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Questo mi colpisce molto. Quindi non si tratta solo di materie, ma proprio di… come funziona la tua testa?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Sì. E spesso i ragazzi si sentono "stupidi" in una certa scuola non perché siano stupidi, ma perché quella scuola valorizza un tipo di intelligenza diverso dal loro. Spostati in un ambiente diverso, e fioriscono.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">E il quarto segnale?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a"><strong>Quarto segnale: non stai scegliendo per esclusione o per paura.</strong> Se la tua scelta suona così: <em>"beh, il classico no di sicuro, lo scientifico dicono che è impegnativo, il tecnico non lo conosce nessuno… quindi faccio lo scientifico"</em> — stai scegliendo per eliminazione. Non per attrazione. E quella è la scelta più rischiosa di tutte.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Perché vai senza una vera motivazione che ti spinge.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Esatto. La motivazione non risolve tutto, ma senza di essa tutto diventa molto più difficile.</div></div>
 
   <div class="highlight-box">
     <h3>💡 I 4 Segnali – Riepilogo</h3>
@@ -522,144 +378,49 @@
 
   <hr class="section">
 
-  <!-- ═══════════════════════════════ BLOCCO 4 ═══ -->
   <div class="section-title">Blocco 4</div>
   <h2 class="block-title">🗣 Il "test del racconto"</h2>
   <span class="timestamp">07:30 – 09:30</span>
-
   <div class="direction">[ tono più giocoso, interattivo ]</div>
 
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Bianchi, ma esiste un modo pratico — tipo un esercizio — che uno studente può fare da solo per capire se sta andando nella direzione giusta?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Sì! Uno che adoro si chiama il <strong>"test del racconto"</strong>. Funziona così: immagina di essere già al primo anno di quella scuola. È settembre, sono passate tre settimane. Scrivi — anche solo mentalmente — cinque frasi su com'è la tua giornata tipo. Cosa fai, cosa studi, come ti senti, con chi stai.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Tipo una specie di diario immaginario.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Esatto. E poi ti fai una domanda sola: <em>in questo racconto, mi riconosco?</em> Mi piace la persona che ci vedo? O mi sento a disagio, fuori posto, come se stessi recitando una parte?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Semplice ma potente. E se il racconto fa schifo?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a"><em>[ride]</em> Bene! Significa che quella scuola non ti convince davvero. Prova a riscriverlo con un'altra scuola come sfondo, e vedi se cambia qualcosa. L'obiettivo non è trovare un racconto perfetto — l'obiettivo è <strong>trovare quello in cui ti senti vivo</strong>.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Bello. E se uno ha paura di sbagliare? Perché alla fine questa è una scelta che pesa, non è come scegliere un film su Netflix.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Assolutamente. Ed è giusto che pesi — vuol dire che ci tieni. Ma voglio dirti una cosa importante: <strong>non esiste la scelta perfetta</strong>. Esiste la scelta più tua possibile, fatta con le informazioni che hai adesso. E se tra un anno ti accorgi che hai sbagliato, il mondo non finisce. Esistono i cambi di indirizzo, i percorsi alternativi, le persone che cambiano strada. Quello che conta è non scegliere per inerzia.</div>
-  </div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Bianchi, ma esiste un modo pratico — tipo un esercizio — che uno studente può fare da solo per capire se sta andando nella direzione giusta?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Sì! Uno che adoro si chiama il <strong>"test del racconto"</strong>. Funziona così: immagina di essere già al primo anno di quella scuola. È settembre, sono passate tre settimane. Scrivi — anche solo mentalmente — cinque frasi su com'è la tua giornata tipo. Cosa fai, cosa studi, come ti senti, con chi stai.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Tipo una specie di diario immaginario.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Esatto. E poi ti fai una domanda sola: <em>in questo racconto, mi riconosco?</em> Mi piace la persona che ci vedo? O mi sento a disagio, fuori posto, come se stessi recitando una parte?</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Semplice ma potente. E se il racconto fa schifo?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a"><em>[ride]</em> Bene! Significa che quella scuola non ti convince davvero. Prova a riscriverlo con un'altra scuola come sfondo, e vedi se cambia qualcosa. L'obiettivo non è trovare un racconto perfetto — l'obiettivo è <strong>trovare quello in cui ti senti vivo</strong>.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Bello. E se uno ha paura di sbagliare? Perché alla fine questa è una scelta che pesa, non è come scegliere un film su Netflix.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Assolutamente. Ed è giusto che pesi — vuol dire che ci tieni. Ma voglio dirti una cosa importante: <strong>non esiste la scelta perfetta</strong>. Esiste la scelta più tua possibile, fatta con le informazioni che hai adesso. E se tra un anno ti accorgi che hai sbagliato, il mondo non finisce. Esistono i cambi di indirizzo, i percorsi alternativi, le persone che cambiano strada. Quello che conta è non scegliere per inerzia.</div></div>
 
   <hr class="section">
 
-  <!-- ═══════════════════════════════ BLOCCO 5 ═══ -->
   <div class="section-title">Blocco 5</div>
   <h2 class="block-title">🎤 La voce degli altri... vale?</h2>
   <span class="timestamp">09:30 – 12:00</span>
 
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Parliamo anche di questo: quante persone intorno a te ti dicono cosa fare. I genitori, i prof, i parenti, gli amici. Come si fa a filtrare tutto questo e sentire la propria voce?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Ottima domanda. Prima cosa: le opinioni degli altri <strong>non vanno ignorate</strong>. Chi ti conosce da vicino — un genitore, un prof che ti segue da anni — a volte vede cose di te che tu ancora non riesci a vedere. Quindi ascolta. Poi però filtra.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Come si filtra?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Chiediti: <em>questa persona mi sta parlando di me, o mi sta proiettando sopra le sue paure o i suoi sogni?</em> C'è differenza enorme tra un genitore che dice <em>"ti vedo bene lì perché sei curioso e ami costruire cose"</em> e uno che dice <em>"vai lì che è la scuola che apre più porte"</em>. Il primo ti sta guardando. Il secondo sta guardando una mappa che forse è anche un po' sua.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">E gli amici? Molti scelgono la scuola in base a dove vanno i loro amici del cuore.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Ne parleremo meglio nell'episodio sei, ma lo dico subito: <strong>le amicizie vere resistono anche con scuole diverse</strong>. E spesso andare in scuole diverse arricchisce le amicizie, invece di distruggerle. Scegliere una scuola per seguire un amico è un po' come scegliere un lavoro per star vicino a qualcuno: può andar bene, ma è un rischio grosso.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Quindi alla fine la bussola vera sei tu.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Sei tu. Con tutto il contributo degli altri, ma la bussola sei tu. E fidati: a tredici anni avete già molto più chiaro di quanto pensiate chi siete. A volte basta fermarsi, fare silenzio, e ascoltarsi davvero.</div>
-  </div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Parliamo anche di questo: quante persone intorno a te ti dicono cosa fare. I genitori, i prof, i parenti, gli amici. Come si fa a filtrare tutto questo e sentire la propria voce?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Ottima domanda. Prima cosa: le opinioni degli altri <strong>non vanno ignorate</strong>. Chi ti conosce da vicino — un genitore, un prof che ti segue da anni — a volte vede cose di te che tu ancora non riesci a vedere. Quindi ascolta. Poi però filtra.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Come si filtra?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Chiediti: <em>questa persona mi sta parlando di me, o mi sta proiettando sopra le sue paure o i suoi sogni?</em> C'è differenza enorme tra un genitore che dice <em>"ti vedo bene lì perché sei curioso e ami costruire cose"</em> e uno che dice <em>"vai lì che è la scuola che apre più porte"</em>. Il primo ti sta guardando. Il secondo sta guardando una mappa che forse è anche un po' sua.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">E gli amici? Molti scelgono la scuola in base a dove vanno i loro amici del cuore.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Ne parleremo meglio nell'episodio sei, ma lo dico subito: <strong>le amicizie vere resistono anche con scuole diverse</strong>. E spesso andare in scuole diverse arricchisce le amicizie, invece di distruggerle. Scegliere una scuola per seguire un amico è un po' come scegliere un lavoro per star vicino a qualcuno: può andar bene, ma è un rischio grosso.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Quindi alla fine la bussola vera sei tu.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Sei tu. Con tutto il contributo degli altri, ma la bussola sei tu. E fidati: a tredici anni avete già molto più chiaro di quanto pensiate chi siete. A volte basta fermarsi, fare silenzio, e ascoltarsi davvero.</div></div>
 
   <hr class="section">
 
-  <!-- ═══════════════════════════════ CHIUSURA ═══ -->
   <div class="section-title">Chiusura</div>
   <h2 class="block-title">🎬 Outro — Saluti e anteprima ep.6</h2>
   <span class="timestamp">12:00 – 13:30</span>
-
   <div class="direction">[ tono caldo, ritmo rallentato ]</div>
 
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Bene, direi che questo episodio ci ha dato tantissimo. Bianchi, vuoi fare un veloce riepilogo dei punti chiave?</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Volentieri. Uno: <strong>non esiste la scelta sicura universale</strong> — esiste quella giusta per te. Due: ascolta i quattro segnali — il corpo, le materie, il tuo tipo di intelligenza e la motivazione reale. Tre: fai il <strong>test del racconto</strong>. Quattro: ascolta gli altri, ma filtra — la bussola sei tu. E cinque: sbagliare non è la fine del mondo. L'inerzia, quella sì, è rischiosa.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Perfetto. E a voi ragazzi che ci state ascoltando: <strong>questa scelta è un regalo</strong>, anche se in questo momento sembra un peso. È una delle prime grandi decisioni della vostra vita. Prendetevela con serietà, ma anche con curiosità. Non con paura.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">Benissimo detto. Nel prossimo episodio — il sesto e ultimo — parleremo delle amicizie: quanto devono influenzare la scelta della scuola? Ne verrà fuori una conversazione interessante, ve lo prometto.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">Se questo episodio vi è piaciuto, condividetelo con un vostro compagno di classe che sta vivendo questa stessa incertezza. Potrebbe fargli comodo.</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag a">BIANCHI</div>
-    <div class="bubble a">A presto!</div>
-  </div>
-
-  <div class="line">
-    <div class="speaker-tag b">BORASO</div>
-    <div class="bubble b">A presto!</div>
-  </div>
-
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Bene, direi che questo episodio ci ha dato tantissimo. Bianchi, vuoi fare un veloce riepilogo dei punti chiave?</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Volentieri. Uno: <strong>non esiste la scelta sicura universale</strong> — esiste quella giusta per te. Due: ascolta i quattro segnali — il corpo, le materie, il tuo tipo di intelligenza e la motivazione reale. Tre: fai il <strong>test del racconto</strong>. Quattro: ascolta gli altri, ma filtra — la bussola sei tu. E cinque: sbagliare non è la fine del mondo. L'inerzia, quella sì, è rischiosa.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Perfetto. E a voi ragazzi che ci state ascoltando: <strong>questa scelta è un regalo</strong>, anche se in questo momento sembra un peso. È una delle prime grandi decisioni della vostra vita. Prendetevela con serietà, ma anche con curiosità. Non con paura.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">Benissimo detto. Nel prossimo episodio — il sesto e ultimo — parleremo delle amicizie: quanto devono influenzare la scelta della scuola? Ne verrà fuori una conversazione interessante, ve lo prometto.</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">Se questo episodio vi è piaciuto, condividetelo con un vostro compagno di classe che sta vivendo questa stessa incertezza. Potrebbe fargli comodo.</div></div>
+  <div class="line"><div class="speaker-tag a">BIANCHI</div><div class="bubble a">A presto!</div></div>
+  <div class="line"><div class="speaker-tag b">BORASO</div><div class="bubble b">A presto!</div></div>
   <div class="direction">[ sigla finale in dissolvenza ]</div>
 
   <div class="highlight-box" style="border-top-color: var(--accent2); margin-top: 40px;">
@@ -674,12 +435,100 @@
     </ul>
   </div>
 
-</div><!-- /page -->
+</div></div><!-- /panel-5 -->
+
+
+<!-- ══════════════════ EPISODE 6 ══════════════════ -->
+<div class="ep-panel" id="panel-6">
+<div class="page">
+
+  <div class="speakers">
+    <div class="speaker-card">
+      <div class="avatar" style="background:#e8f5ec; border:2px solid #2a7a4b; font-size:22px;">👦</div>
+      <div class="speaker-info"><strong>ANGELO</strong><span>Voce 1 — riflessivo, diretto</span></div>
+    </div>
+    <div class="speaker-card">
+      <div class="avatar" style="background:#f5e8f3; border:2px solid #7a2a6a; font-size:22px;">👧</div>
+      <div class="speaker-info"><strong>GAIA</strong><span>Voce 2 — empatica, concreta</span></div>
+    </div>
+  </div>
+
+  <hr class="section">
+
+  <div class="section-title">Script completo</div>
+  <h2 class="block-title">🎬 Le amicizie devono influenzare la scelta?</h2>
+  <span class="timestamp">Episodio 6 · Durata stimata: 6–8 min</span>
+
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Oggi parliamo di una domanda che tanti ragazzi si fanno: <em>"Le amicizie devono influenzare la scelta della scuola superiore?"</em></div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">Eh sì, perché quando arriva il momento di scegliere, una delle prime cose che pensiamo è: <em>"E i miei amici dove vanno?"</em></div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">È normale! Gli amici sono importanti, ci fanno sentire sicuri, soprattutto in un cambiamento grande come quello delle superiori.</div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">Però c'è da chiedersi: è giusto scegliere una scuola solo per non separarsi?</div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Secondo me… non del tutto. Le amicizie sono importanti, ma la scelta della scuola riguarda il <strong>tuo futuro</strong>.</div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">Esatto. Dovresti pensare a cosa ti piace, alle materie che ti interessano e a che tipo di percorso vuoi fare.</div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Anche perché, se scegli una scuola solo per stare con i tuoi amici, ma poi non ti piace… rischi di annoiarti o di trovarti male.</div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">E poi diciamolo: <strong>le vere amicizie non finiscono perché si va in scuole diverse.</strong></div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Anzi! Se un'amicizia è forte, continua anche fuori dalla scuola.</div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">E nelle superiori si conoscono anche tante persone nuove con interessi diversi!</div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Quindi, la risposta è: gli amici possono influenzare <em>un po'</em> la scelta, ma non devono essere il motivo principale.</div></div>
+  <div class="line"><div class="speaker-tag d">GAIA</div><div class="bubble d">La cosa più importante è scegliere la scuola giusta <strong>PER TE.</strong></div></div>
+  <div class="line"><div class="speaker-tag c">ANGELO</div><div class="bubble c">Perché è il <strong>TUO</strong> futuro… non quello dei tuoi amici.</div></div>
+
+  <div class="highlight-box" style="border-top-color:#2a7a4b; margin-top:40px;">
+    <h3 style="color:#2a7a4b;">📋 Note di regia — Episodio 6</h3>
+    <ul>
+      <li>Episodio più breve e diretto — tono leggero, quasi da dialogo tra amici</li>
+      <li>Angelo apre i temi, Gaia chiude i concetti — ritmo alternato</li>
+      <li>Sottolineare con una piccola pausa prima di <em>"PER TE"</em> e <em>"TUO futuro"</em></li>
+      <li>Possibile musica di sottofondo più giovane rispetto agli altri episodi</li>
+    </ul>
+  </div>
+
+</div></div><!-- /panel-6 -->
+
 
 <footer>
-  <span>Podcast – Orientamento Scolastico · Episodio 5 di 6</span>
-  <span>Script v1.0 · Uso interno</span>
+  <span id="footer-label">Podcast – Orientamento Scolastico · Episodio 5 di 6</span>
+  <span>Script v2.0 · Uso interno</span>
 </footer>
+
+<script>
+  const episodes = {
+    5: {
+      title: 'Come capisco se è<br><em>la scuola giusta</em> per me?',
+      meta: ['Episodio 5 di 6','Target: studenti medie + famiglie','Durata stimata: 12–15 min','Formato: dialogo 2 speaker'],
+      footer: 'Podcast – Orientamento Scolastico · Episodio 5 di 6'
+    },
+    6: {
+      title: 'Le amicizie devono<br><em>influenzare la scelta?</em>',
+      meta: ['Episodio 6 di 6','Target: studenti medie + famiglie','Durata stimata: 6–8 min','Formato: dialogo 2 speaker'],
+      footer: 'Podcast – Orientamento Scolastico · Episodio 6 di 6'
+    }
+  };
+
+  function switchTo(ep) {
+    document.querySelectorAll('.ep-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + ep).classList.add('active');
+
+    document.querySelectorAll('.series-nav .ep[data-ep]').forEach(el => {
+      const elEp = parseInt(el.dataset.ep);
+      el.classList.toggle('current', elEp === ep);
+      el.classList.toggle('clickable', elEp !== ep);
+    });
+
+    const data = episodes[ep];
+    document.getElementById('main-title').innerHTML = data.title;
+    document.getElementById('meta-row').innerHTML = data.meta.map(m => `<span>${m}</span>`).join('');
+    document.getElementById('footer-label').textContent = data.footer;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.querySelectorAll('.series-nav .ep[data-ep]').forEach(el => {
+    el.addEventListener('click', () => {
+      const ep = parseInt(el.dataset.ep);
+      if (!el.classList.contains('current')) switchTo(ep);
+    });
+  });
+</script>
 
 </body>
 </html>
