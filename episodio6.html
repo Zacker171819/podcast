@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ep.6 – Le amicizie devono influenzare la scelta?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@300;400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --ink: #1a1410;
+    --accent: #2a7a4b;
+    --accent2: #7a2a6a;
+    --rule: #c8b89a;
+    --note-bg: #fffbe6;
+    --note-border: #e6b800;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 48px 64px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "🎙";
+    font-size: 180px;
+    position: absolute;
+    right: 40px;
+    top: -20px;
+    opacity: .07;
+    pointer-events: none;
+  }
+  .series-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--rule);
+    margin-bottom: 10px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.2;
+    max-width: 680px;
+  }
+  header h1 em { font-style: italic; color: #f0c090; }
+  .meta-row {
+    margin-top: 20px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--rule);
+    letter-spacing: .08em;
+  }
+  .meta-row span::before { content: "▸ "; }
+
+  .series-nav {
+    background: var(--ink);
+    border-top: 1px solid #333;
+    padding: 14px 64px;
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+  .series-nav .ep {
+    padding: 6px 16px 6px 0;
+    color: #888;
+    border-right: 1px solid #333;
+    margin-right: 16px;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .series-nav .ep:last-child { border-right: none; margin-right: 0; }
+  .series-nav .ep.current { color: #f0c090; font-weight: 400; }
+  .series-nav a.ep.clickable {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #555;
+    color: #888;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .series-nav a.ep.clickable:hover { color: #f0c090; }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .speakers {
+    display: flex;
+    gap: 24px;
+    margin: 40px 0 8px;
+    flex-wrap: wrap;
+  }
+  .speaker-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 8px;
+    padding: 14px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    flex: 1;
+    min-width: 200px;
+  }
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .speaker-info strong { display: block; font-weight: 700; font-size: 14px; }
+  .speaker-info span { font-size: 12px; color: #888; }
+
+  hr.section { border: none; border-top: 2px solid var(--rule); margin: 32px 0 28px; }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 6px;
+  }
+  h2.block-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .direction {
+    background: var(--note-bg);
+    border-left: 3px solid var(--note-border);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-style: italic;
+    color: #7a6a00;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    margin-bottom: 18px;
+    align-items: start;
+  }
+  .speaker-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding-top: 14px;
+    text-align: right;
+  }
+  .speaker-tag.c { color: #2a7a4b; }
+  .speaker-tag.d { color: #7a2a6a; }
+
+  .bubble {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .bubble.c { background: #edf7f1; border: 1px solid #b5dfc5; border-left: 3px solid #2a7a4b; }
+  .bubble.d { background: #f7edf5; border: 1px solid #dfb5d5; border-left: 3px solid #7a2a6a; }
+  .bubble strong { font-weight: 700; }
+  .bubble em { font-style: italic; color: #555; }
+
+  .highlight-box {
+    background: white;
+    border: 1.5px solid var(--rule);
+    border-top: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .highlight-box h3 { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 12px; color: var(--accent); }
+  .highlight-box ul { list-style: none; padding: 0; }
+  .highlight-box ul li { padding: 5px 0 5px 22px; position: relative; font-size: 14px; border-bottom: 1px dotted #e0d5c0; }
+  .highlight-box ul li:last-child { border-bottom: none; }
+  .highlight-box ul li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+  .timestamp {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+    letter-spacing: .1em;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding: 28px 64px;
+    background: var(--ink);
+    color: #888;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media(max-width:600px){
+    header { padding: 32px 24px; }
+    .series-nav { padding: 12px 24px; }
+    .page { padding: 0 16px; }
+    .line { grid-template-columns: 60px 1fr; gap: 10px; }
+    footer { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="series-label">Script Podcast · Orientamento Scolastico</div>
+  <h1>Le amicizie devono<br><em>influenzare la scelta?</em></h1>
+  <div class="meta-row">
+    <span>Episodio 6 di 6</span>
+    <span>Target: studenti medie + famiglie</span>
+    <span>Durata stimata: 6–8 min</span>
+    <span>Formato: dialogo 2 speaker</span>
+  </div>
+</header>
+
+<nav class="series-nav">
+  <div class="ep">Ep.1 – La scuola giusta per mio figlio</div>
+  <div class="ep">Ep.2 – I genitori devono influire?</div>
+  <div class="ep">Ep.3 – Il lavoro dei sogni</div>
+  <div class="ep">Ep.4 – Sfruttare gli open day</div>
+  <a class="ep clickable" href="ep5.html">Ep.5 – Come capisco se è giusta PER ME?</a>
+  <div class="ep current">Ep.6 – Le amicizie influenzano? ★</div>
+</nav>
+
+<div class="page">
+
+  <div class="speakers">
+    <div class="speaker-card">
+      <div class="avatar" style="border:2px solid #2a7a4b;">
+        <img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/gnell.jpeg" alt="Angelo">
+      </div>
+      <div class="speaker-info"><strong>ANGELO</strong><span>Voce 1 — riflessivo, diretto</span></div>
+    </div>
+    <div class="speaker-card">
+      <div class="avatar" style="border:2px solid #7a2a6a;">
+        <img src="https://raw.githubusercontent.com/Zacker171819/podcast/main/dgos.jpeg" alt="Gaia">
+      </div>
+      <div class="speaker-info"><strong>GAIA</strong><span>Voce 2 — empatica, concreta</span></div>
+    </div>
+  </div>
+
+  <hr class="section">
+
+  <div class="section-title">Script completo</div>
+  <h2 class="block-title">🎬 Le amicizie devono influenzare la scelta?</h2>
+  <span class="timestamp">Episodio 6 · Durata stimata: 6–8 min</span>
+
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Oggi parliamo di una domanda che tanti ragazzi si fanno: <em>"Le amicizie devono influenzare la scelta della scuola superiore?"</em></div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">Eh sì, perché quando arriva il momento di scegliere, una delle prime cose che pensiamo è: <em>"E i miei amici dove vanno?"</em></div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">È normale! Gli amici sono importanti, ci fanno sentire sicuri, soprattutto in un cambiamento grande come quello delle superiori.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">Però c'è da chiedersi: è giusto scegliere una scuola solo per non separarsi?</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Secondo me… non del tutto. Le amicizie sono importanti, ma la scelta della scuola riguarda il <strong>tuo futuro</strong>.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">Esatto. Dovresti pensare a cosa ti piace, alle materie che ti interessano e a che tipo di percorso vuoi fare.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Anche perché, se scegli una scuola solo per stare con i tuoi amici, ma poi non ti piace… rischi di annoiarti o di trovarti male.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">E poi diciamolo: <strong>le vere amicizie non finiscono perché si va in scuole diverse.</strong></div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Anzi! Se un'amicizia è forte, continua anche fuori dalla scuola.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">E nelle superiori si conoscono anche tante persone nuove con interessi diversi!</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Quindi, la risposta è: gli amici possono influenzare <em>un po'</em> la scelta, ma non devono essere il motivo principale.</div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag d">GAIA</div>
+    <div class="bubble d">La cosa più importante è scegliere la scuola giusta <strong>PER TE.</strong></div>
+  </div>
+  <div class="line">
+    <div class="speaker-tag c">ANGELO</div>
+    <div class="bubble c">Perché è il <strong>TUO</strong> futuro… non quello dei tuoi amici.</div>
+  </div>
+
+  <div class="highlight-box" style="margin-top:40px;">
+    <h3>📋 Note di regia — Episodio 6</h3>
+    <ul>
+      <li>Episodio più breve e diretto — tono leggero, quasi da dialogo tra amici</li>
+      <li>Angelo apre i temi, Gaia chiude i concetti — ritmo alternato</li>
+      <li>Sottolineare con una piccola pausa prima di <em>"PER TE"</em> e <em>"TUO futuro"</em></li>
+      <li>Possibile musica di sottofondo più giovane rispetto agli altri episodi</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <span>Podcast – Orientamento Scolastico · Episodio 6 di 6</span>
+  <span>Script v2.0 · Uso interno</span>
+</footer>
+
+</body>
+</html>
